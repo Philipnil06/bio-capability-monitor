@@ -1,0 +1,43 @@
+# Python environments and caches
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+# Local environment and credentials
+.env
+.env.*
+!.env.example
+.streamlit/credentials.toml
+
+# Experiment outputs and logs
+results/*.jsonl
+results/*.csv
+results/*.md
+results/*.log
+vllm_server.log
+server_launch_command.txt
+setup_summary.md
+
+# Local model and Hugging Face caches
+huggingface/
+.huggingface/
+hf_cache/
+transformers_cache/
+hub/
+models/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.ckpt
+*.gguf
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
