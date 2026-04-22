@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -27,6 +28,39 @@ def to_jsonable(value: Any) -> Any:
     return value
 
 
+def parse_json_object(raw: str) -> dict[str, Any]:
+    """Parse a JSON object from raw model text, tolerating code fences or trailing prose."""
+
+    text = raw.strip()
+    if not text:
+        raise ValueError("Model returned an empty response.")
+
+    try:
+        parsed = json.loads(text)
+    except json.JSONDecodeError:
+        parsed = None
+    if isinstance(parsed, dict):
+        return parsed
+    if parsed is not None:
+        raise ValueError(f"Expected a JSON object, got {type(parsed).__name__}.")
+
+    fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, flags=re.DOTALL | re.IGNORECASE)
+    if fence:
+        parsed = json.loads(fence.group(1))
+        if not isinstance(parsed, dict):
+            raise ValueError(f"Expected a JSON object in fenced block, got {type(parsed).__name__}.")
+        return parsed
+
+    start = text.find("{")
+    if start == -1:
+        raise ValueError("No JSON object found in model response.")
+    decoder = json.JSONDecoder()
+    parsed, _ = decoder.raw_decode(text[start:])
+    if not isinstance(parsed, dict):
+        raise ValueError(f"Expected a JSON object, got {type(parsed).__name__}.")
+    return parsed
+
+
 def append_jsonl(path: Path, record: dict[str, Any]) -> None:
     """Append a single JSON object to a JSONL file."""
 
@@ -40,4 +74,3 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
 
     with path.open("r", encoding="utf-8") as handle:
         return [json.loads(line) for line in handle if line.strip()]
-

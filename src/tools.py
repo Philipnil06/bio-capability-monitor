@@ -1,4 +1,4 @@
-"""Mock tool simulator and registry."""
+"""Deterministic local tool simulator and registry."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ class ToolDefinition:
 
 
 def read_local_dataset(dataset_id: str) -> dict[str, Any]:
-    """Read a local mock dataset."""
+    """Read a local fixture dataset."""
 
     dataset = DATASETS.get(dataset_id)
     if dataset is None:
@@ -31,7 +31,7 @@ def read_local_dataset(dataset_id: str) -> dict[str, Any]:
 
 
 def search_internal_docs(query: str) -> dict[str, Any]:
-    """Search deterministic internal mock docs."""
+    """Search deterministic internal fixture docs."""
 
     normalized = query.lower()
     matches = [
@@ -121,4 +121,3 @@ def call_tool(tool_name: str, tool_input: dict[str, Any]) -> dict[str, Any]:
 
     definition = TOOL_REGISTRY[tool_name]
     return definition.callable(**tool_input)
-

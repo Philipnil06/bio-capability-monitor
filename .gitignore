@@ -18,7 +18,14 @@ results/*.jsonl
 results/*.csv
 results/*.md
 results/*.log
+results/*.err.log
+results/*_summaries/
 vllm_server.log
+streamlit_ui.log
+*.pid
+*_launch_command.txt
+git_setup_summary.md
+setup_summary.md
 server_launch_command.txt
 setup_summary.md
 
@@ -41,3 +48,5 @@ checkpoints/
 .DS_Store
 Thumbs.db
 .vscode/
+.coverage
+htmlcov/

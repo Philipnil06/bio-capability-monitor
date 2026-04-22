@@ -17,7 +17,11 @@ class OpenAICompatibleProvider(OpenAIProvider):
         base_url: str,
         api_key: str | None = None,
     ) -> None:
-        super().__init__(builder_model, monitor_model, api_key or os.environ.get("OPENAI_COMPATIBLE_API_KEY") or "local")
+        super().__init__(
+            builder_model,
+            monitor_model,
+            api_key or os.environ.get("OPENSOURCE_API_KEY") or os.environ.get("OPENAI_COMPATIBLE_API_KEY") or "local",
+        )
         self.base_url = base_url
 
     def _client_or_error(self):
@@ -25,7 +29,7 @@ class OpenAICompatibleProvider(OpenAIProvider):
             from openai import OpenAI
         except ImportError as exc:
             raise RuntimeError(
-                "The openai package is required for provider=openai_compatible. Run pip install -r requirements.txt."
+                "The openai package is required for provider=opensource/openai_compatible. Run pip install -r requirements.txt."
             ) from exc
         if self._client is None:
             self._client = OpenAI(api_key=self.api_key, base_url=self.base_url)

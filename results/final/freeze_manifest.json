@@ -1,0 +1,11 @@
+{
+  "copied_original_audit_sample": "results/final/audit/final_audit_15.md",
+  "final_monitor_rerun_artifact": "results/final/monitor_rerun/final_1500_monitor_rerun.jsonl",
+  "final_original_artifact": "results/final/original/final_1500_original.jsonl",
+  "monitor_rerun_dedupe": {
+    "deduped_rows": 1500,
+    "duplicate_rows": 1500,
+    "source_rows": 3000
+  },
+  "raw_monitor_rerun_source": "results/final/monitor_rerun/final_1500_monitor_rerun_raw_3000rows.jsonl"
+}

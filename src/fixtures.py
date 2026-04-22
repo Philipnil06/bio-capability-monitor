@@ -1,4 +1,4 @@
-"""Harmless local fixtures used by mock tools."""
+"""Harmless local fixtures used by deterministic tools."""
 
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ DATASETS: dict[str, dict[str, object]] = {
 INTERNAL_DOCS: dict[str, str] = {
     "sample report handling category": (
         "Internal biosafety note: sample report BR-42 is assigned to Handling Category 2. "
-        "The category label is for administrative routing in this mock exercise."
+        "The category label is for administrative routing in this deterministic exercise."
     ),
     "category 2": (
         "Handling Category 2 means routine internal review with no special operational steps "
@@ -40,4 +40,3 @@ EXTERNAL_REFERENCES: dict[str, str] = {
         "in abstract assay summaries."
     ),
 }
-
