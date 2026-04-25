@@ -14,6 +14,11 @@ import streamlit as st
 from src.analyze_results import build_summary_tables, default_summary_dir, metric_text, pct_text, write_summary_tables
 from src.config import DEFAULT_OPENSOURCE_BASE_URL, DEFAULT_OPENSOURCE_MODEL
 from src.builder import Builder
+from src.final_clean_scope import (
+    default_final_clean_output_dir,
+    load_final_clean_outputs,
+    run_final_clean_scope_experiment,
+)
 from src.monitor import Monitor
 from src.run_experiment import (
     build_provider,
@@ -53,7 +58,7 @@ def list_result_files() -> list[Path]:
     """List available JSONL result files."""
 
     RESULTS_DIR.mkdir(exist_ok=True)
-    return sorted(RESULTS_DIR.glob("*.jsonl"), key=lambda path: path.stat().st_mtime, reverse=True)
+    return sorted(RESULTS_DIR.rglob("*.jsonl"), key=lambda path: path.stat().st_mtime, reverse=True)
 
 
 def result_file_run_count(path: Path) -> int | None:
@@ -71,6 +76,8 @@ def result_file_label(path: Path) -> str:
 
     count = result_file_run_count(path)
     count_text = "unknown runs" if count is None else f"{count} runs"
+    if path.name == "final_clean_scope_run.jsonl" and path.parent.name.startswith("final_clean_scope_"):
+        return f"{path} | FINAL CLEAN SCOPE DEFENSE | {count_text}"
     if path.name == "latest_ui.jsonl":
         return f"{path} | FINAL BENCHMARK | {count_text}"
     if path.name == "latest_ui_monitor_no_hidden.jsonl":
@@ -83,6 +90,13 @@ def default_results_file(result_files: list[Path]) -> Path | None:
 
     if not result_files:
         return None
+    final_clean = [
+        path
+        for path in result_files
+        if path.name == "final_clean_scope_run.jsonl" and path.parent.name.startswith("final_clean_scope_")
+    ]
+    if final_clean:
+        return final_clean[0]
     preferred_names = [
         "latest_ui.jsonl",
         "latest_ui_monitor_no_hidden.jsonl",
@@ -349,6 +363,87 @@ def display_summary_tables(
             st.code(f"{name}: {path}")
 
 
+def display_final_clean_results(result: dict[str, Any]) -> None:
+    """Render final clean scope run outputs."""
+
+    run_dir = Path(result["run_dir"])
+    outputs = load_final_clean_outputs(run_dir)
+    original_hard = outputs.get("original_hard_label", {})
+    augmented_hard = outputs.get("augmented_hard_label", {})
+    augmented_all = outputs.get("augmented_all_valid", {})
+    holdout = outputs.get("holdout", {})
+    records = result.get("records", [])
+    valid_runs = sum(1 for row in records if row.get("valid_run", True))
+
+    st.subheader("Final Clean Scope Run Complete")
+    cols = st.columns(5)
+    cols[0].metric("Valid runs", f"{valid_runs}/{len(records)}")
+    cols[1].metric("Main success", original_hard.get("main_task_success_count", "-"))
+    cols[2].metric("True violations", original_hard.get("true_violation_count", "-"))
+    cols[3].metric("Safety-adjusted", original_hard.get("safety_adjusted_success_count", "-"))
+    cols[4].metric("New FP", holdout.get("fresh_new_FP_from_scope_defense", "-"))
+
+    cols2 = st.columns(5)
+    cols2[0].metric("Original F1", _metric_display(original_hard.get("f1")))
+    cols2[1].metric("Augmented F1", _metric_display(augmented_hard.get("f1")))
+    cols2[2].metric("Original recall", _metric_display(original_hard.get("recall")))
+    cols2[3].metric("Augmented recall", _metric_display(augmented_hard.get("recall")))
+    cols2[4].metric("Fresh FN recovered", holdout.get("fresh_FN_recovered_by_scope_defense", "-"))
+
+    tabs = st.tabs(
+        [
+            "Original monitor summary",
+            "Augmented monitor summary",
+            "Scope defense holdout",
+            "By condition",
+            "By scenario",
+            "Scenario x condition",
+            "Files",
+        ]
+    )
+    with tabs[0]:
+        st.write("Hard-label")
+        st.dataframe([original_hard], use_container_width=True, hide_index=True)
+        st.write("All-valid")
+        st.dataframe([outputs.get("original_all_valid", {})], use_container_width=True, hide_index=True)
+    with tabs[1]:
+        st.write("Hard-label")
+        st.dataframe([augmented_hard], use_container_width=True, hide_index=True)
+        st.write("All-valid")
+        st.dataframe([augmented_all], use_container_width=True, hide_index=True)
+    with tabs[2]:
+        st.dataframe([holdout], use_container_width=True, hide_index=True)
+    with tabs[3]:
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_condition_original.csv"), use_container_width=True, hide_index=True)
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_condition_augmented.csv"), use_container_width=True, hide_index=True)
+    with tabs[4]:
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_scenario_original.csv"), use_container_width=True, hide_index=True)
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_scenario_augmented.csv"), use_container_width=True, hide_index=True)
+    with tabs[5]:
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_scenario_condition_original.csv"), use_container_width=True, hide_index=True)
+        st.dataframe(_read_csv_rows(run_dir / "summaries" / "by_scenario_condition_augmented.csv"), use_container_width=True, hide_index=True)
+    with tabs[6]:
+        st.code(f"Run directory: {run_dir}")
+        for key, value in result.get("outputs", {}).items():
+            st.code(f"{key}: {value}")
+
+
+def _metric_display(value: Any) -> str:
+    try:
+        return f"{float(value):.1%}"
+    except Exception:
+        return "-"
+
+
+def _read_csv_rows(path: Path) -> list[dict[str, Any]]:
+    import csv
+
+    if not path.exists() or path.stat().st_size == 0:
+        return []
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
 def main() -> None:
     st.set_page_config(page_title="Bio Capability Boundary Monitor Debug", layout="wide")
     st.title("Bio Capability Boundary Monitor Debug")
@@ -441,6 +536,65 @@ def main() -> None:
         with right:
             st.subheader("Latest Final Output")
             st.text_area("Final output", value=latest.get("final_output", ""), height=220, disabled=True)
+
+    st.divider()
+    st.subheader("Final Clean Run")
+    st.caption("Fresh end-to-end run with clean monitor input, optional scope defense, holdout validation, and paper-ready exports.")
+    final_cols = st.columns(4)
+    with final_cols[0]:
+        final_runs_per_task = st.number_input("Final runs per task", min_value=1, max_value=1000, value=100, step=1)
+    with final_cols[1]:
+        final_seed = st.number_input("Final random seed", min_value=0, max_value=1_000_000, value=7, step=1)
+    with final_cols[2]:
+        final_enable_scope = st.checkbox("Enable scope defense", value=True)
+    with final_cols[3]:
+        final_holdout = st.checkbox("Run holdout validation", value=True)
+    final_output_dir = Path(
+        st.text_input("Final output directory", value=str(default_final_clean_output_dir()))
+    )
+    final_clicked = st.button("Run Fresh Clean Scope Experiment", type="primary")
+
+    if final_clicked:
+        final_progress = st.progress(0.0, text="Preparing final clean run...")
+        final_status = st.empty()
+        final_started = time.monotonic()
+
+        def update_final_progress(completed: int, total: int, task_id: str, row: dict[str, Any], elapsed_seconds: float) -> None:
+            progress = completed / total if total else 0.0
+            remaining = (elapsed_seconds / completed * (total - completed)) if completed else 0.0
+            final_progress.progress(
+                progress,
+                text=f"Final clean run {completed}/{total} | Latest task: {task_id}",
+            )
+            final_status.caption(
+                f"Elapsed: {format_elapsed(elapsed_seconds)} | ETA: {format_elapsed(remaining)} | "
+                f"Latest outcome: {row.get('monitor_outcome', '-')}"
+            )
+
+        try:
+            final_result = run_final_clean_scope_experiment(
+                provider_name=provider_name,
+                builder_model=builder_model,
+                monitor_model=monitor_model,
+                base_url=base_url,
+                runs_per_task=int(final_runs_per_task),
+                random_seed=int(final_seed),
+                output_dir=final_output_dir,
+                enable_scope_defense=bool(final_enable_scope),
+                run_holdout_validation=bool(final_holdout),
+                progress_callback=update_final_progress,
+            )
+            final_progress.progress(1.0, text="Final clean run complete")
+            final_status.caption(f"Elapsed: {format_elapsed(time.monotonic() - final_started)}")
+            st.session_state["final_clean_scope_result"] = final_result
+            st.session_state["latest_output_path"] = str(final_result["artifact_path"])
+            st.success(f"Wrote final clean scope run to {final_result['artifact_path']}")
+        except Exception as exc:
+            final_status.caption(f"Elapsed: {format_elapsed(time.monotonic() - final_started)} | Run marked incomplete in manifest if initialized.")
+            st.error(f"Final clean scope run failed: {exc}")
+
+    if st.session_state.get("final_clean_scope_result"):
+        display_final_clean_results(st.session_state["final_clean_scope_result"])
 
     st.divider()
     st.subheader("Results Browser")

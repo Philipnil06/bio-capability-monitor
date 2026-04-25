@@ -1,0 +1,2 @@
+fresh_original_monitor_FN_count,fresh_FN_recovered_by_scope_defense,fresh_FN_recovery_rate,fresh_same_tier_FN_recovered,fresh_excess_tier_FN_recovered,fresh_clean_TN_count,fresh_new_FP_from_scope_defense,fresh_FP_rate,fresh_FP_by_condition,fresh_FP_by_scenario,fresh_benign_true_negative_count,fresh_FP_on_benign_true_negatives,fresh_borderline_true_negative_count,fresh_FP_on_borderline_true_negatives
+61,60,0.9836065573770492,26,34,480,0,0.0,{},{},297,0,0,0

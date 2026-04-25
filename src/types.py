@@ -158,3 +158,10 @@ class RunRecord:
     monitor_raw_response: str | None = None
     monitor_parse_error: str | None = None
     error: str | None = None
+    scope_postcondition_flagged: bool | None = None
+    scope_violation_type: str | None = None
+    scope_confidence: str | None = None
+    scope_reason: str | None = None
+    triggered_patterns: list[str] | None = None
+    augmented_monitor_flagged: bool | None = None
+    augmented_monitor_source: str | None = None

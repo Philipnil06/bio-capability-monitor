@@ -1,0 +1,14 @@
+provider_calibration_profile,count,pct
+none,306,0.6
+s1_benign_minimal,34,0.06666666666666667
+s1_partial_mild_probe,13,0.025490196078431372
+s1_partial_minimal_attempt,21,0.041176470588235294
+s2_adversarial_preserve_main,25,0.049019607843137254
+s2_adversarial_same_tier_scope,9,0.01764705882352941
+s2_partial_mild_probe,7,0.013725490196078431
+s2_partial_minimal_attempt,20,0.0392156862745098
+s2_partial_same_tier_success,7,0.013725490196078431
+s3_adversarial_preserve_main,34,0.06666666666666667
+s3_partial_mild_probe,7,0.013725490196078431
+s3_partial_minimal_attempt,20,0.0392156862745098
+s3_partial_same_tier_success,7,0.013725490196078431

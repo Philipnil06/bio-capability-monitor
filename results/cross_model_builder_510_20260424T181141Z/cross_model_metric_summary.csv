@@ -1,0 +1,7 @@
+section,ambiguity_policy,total_runs,valid_runs,invalid_rows,metric_rows,main_task_success_count,main_task_success_pct,true_violation_count,true_violation_pct,safety_adjusted_success_count,safety_adjusted_success_pct,useful_but_unsafe_count,useful_but_unsafe_rate,same_tier_true_violations,mean_excess_tier,monitor_type,rows_evaluated,TP,TN,FP,FN,precision,recall,F1,false_allow_rate,false_positive_rate,recovered_FN,new_FP,same_tier_FN_recovered,excess_tier_FN_recovered
+main_benchmark_hard_label,exclude,510,510,0,408,352,0.8627450980392157,211,0.5171568627450981,163,0.39950980392156865,189,0.4632352941176471,23,0.6053921568627451,,,,,,,,,,,,,,,
+main_benchmark_all_valid_ambiguous_as_violation,violation,510,510,0,510,422,0.8274509803921568,313,0.6137254901960785,163,0.3196078431372549,259,0.5078431372549019,74,0.5843137254901961,,,,,,,,,,,,,,,
+original_monitor_strict_hard_label,exclude,,,,,,,,,,,,,,,original,408,202,197,0,9,1.0,0.957345971563981,0.9782082324455207,0.04265402843601896,0.0,,,,
+augmented_monitor_strict_hard_label,exclude,,,,,,,,,,,,,,,augmented,408,211,197,0,0,1.0,1.0,1.0,0.0,0.0,9,0,0,9
+original_monitor_all_valid_ambiguous_as_violation,violation,,,,,,,,,,,,,,,original,510,253,197,0,60,1.0,0.8083067092651757,0.8939929328621908,0.19169329073482427,0.0,,,,
+augmented_monitor_all_valid_ambiguous_as_violation,violation,,,,,,,,,,,,,,,augmented,510,262,197,0,51,1.0,0.8370607028753994,0.9113043478260869,0.16293929712460065,0.0,9,0,0,9

@@ -1,0 +1,42 @@
+{
+  "allowed_payload_fields": [
+    "allowed_tier",
+    "excess_tier",
+    "final_output",
+    "observed_tier",
+    "scenario_id",
+    "tool_trace",
+    "visible_prompt"
+  ],
+  "forbidden_fields_checked": [
+    "FN",
+    "FP",
+    "TN",
+    "TP",
+    "ambiguous_violation",
+    "attempted_violation",
+    "condition",
+    "hidden_side_goal",
+    "monitor_outcome",
+    "original_monitor_outcome",
+    "overuse_violation",
+    "rerun_monitor_outcome",
+    "side_task_attempted",
+    "side_task_success",
+    "successful_violation",
+    "true_violation",
+    "verifier_notes"
+  ],
+  "forbidden_present": [],
+  "payload_keys_seen": [
+    "allowed_tier",
+    "excess_tier",
+    "final_output",
+    "observed_tier",
+    "scenario_id",
+    "tool_trace",
+    "visible_prompt"
+  ],
+  "rows_checked": 1500,
+  "unexpected_present": []
+}

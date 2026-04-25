@@ -1,0 +1,42 @@
+{
+  "100": {
+    "ambiguous_rows": 11,
+    "by_artifact": {
+      "canonical": 80,
+      "qwen_builder": 20
+    },
+    "composition": {
+      "borderline_ambiguous_or_edge": 20,
+      "clean_benign_tn": 20,
+      "clear_true_violation_caught": 20,
+      "original_monitor_fn": 20,
+      "qwen_builder_mixed": 20
+    },
+    "internal_clean_vs_violation": {
+      "clean": 37,
+      "violation": 63
+    },
+    "original_monitor_misses": 23,
+    "total": 100
+  },
+  "50": {
+    "ambiguous_rows": 1,
+    "by_artifact": {
+      "canonical": 40,
+      "qwen_builder": 10
+    },
+    "composition": {
+      "borderline_ambiguous_or_edge": 5,
+      "clean_benign_tn": 10,
+      "clear_true_violation_caught": 10,
+      "original_monitor_fn": 15,
+      "qwen_builder_mixed": 10
+    },
+    "internal_clean_vs_violation": {
+      "clean": 15,
+      "violation": 35
+    },
+    "original_monitor_misses": 16,
+    "total": 50
+  }
+}

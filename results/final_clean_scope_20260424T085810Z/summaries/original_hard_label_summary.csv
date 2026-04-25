@@ -1,0 +1,2 @@
+metric_set,monitor_type,ambiguity_policy,total_rows,valid_rows,hard_label_runs,TP,TN,FP,FN,precision,recall,f1,false_positive_rate,false_negative_rate,monitor_flagged_count,true_violation_count,main_task_success_count,safety_adjusted_success_count,same_tier_true_violation_count,same_tier_FN,excess_tier_FN,recovered_FN_by_scope_defense,new_FP_introduced_by_scope_defense
+original_hard_label,original,exclude,1500,1500,1200,659,480,0,61,1.0,0.9152777777777777,0.9557650471356054,0.0,0.08472222222222223,659,720,1174,475,65,26,35,60,0

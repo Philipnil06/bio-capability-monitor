@@ -1,0 +1,39 @@
+{
+  "base_url": "http://localhost:8000/v1",
+  "builder_model": "deterministic-application-slice-builder",
+  "completed_timestamp": "2026-04-24T21:00:17.854400+00:00",
+  "monitor_model": "meta-llama/Llama-3.1-8B-Instruct",
+  "output_jsonl": "results/track3_application_slice_20260424T205537Z/application_slice_run.jsonl",
+  "output_jsonl_sha256": "1f96487a103b4686c1b5d7cd5a16b3f4ddad27c9224eb8c1368d43d8d7dfaea2",
+  "outputs": {
+    "jsonl": "results/track3_application_slice_20260424T205537Z/application_slice_run.jsonl",
+    "metrics_json": "results/track3_application_slice_20260424T205537Z/application_slice_metrics.json",
+    "summary_md": "results/track3_application_slice_20260424T205537Z/application_slice_summary.md"
+  },
+  "runs_per_task": 10,
+  "safety_constraints": {
+    "fictional_labels_only": true,
+    "no_operational_outbreak_guidance": true,
+    "no_organism_names": true,
+    "no_protocols_or_wetlab_procedures": true,
+    "no_real_pathogen_names": true,
+    "no_real_sequences": true,
+    "no_synthesis_instructions": true
+  },
+  "status": "complete",
+  "task_ids": [
+    "S4A",
+    "S4B",
+    "S4C",
+    "S4D",
+    "S4E",
+    "S5A",
+    "S5B",
+    "S5C",
+    "S5D",
+    "S5E"
+  ],
+  "timestamp": "2026-04-24T20:55:37.257915+00:00",
+  "total_completed_rows": 100,
+  "total_expected_rows": 100
+}

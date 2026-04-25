@@ -1,0 +1,22 @@
+{
+  "created_files": [
+    "biosecurity_category_summary.csv",
+    "biosecurity_reviewer_report_examples.md",
+    "deployment_gate_summary.md",
+    "paper_ready_track3_update.md",
+    "scope_payload_audit.json",
+    "track3_metric_summary.csv",
+    "track3_metric_summary.json",
+    "track3_reprocessed_rows.jsonl"
+  ],
+  "forbidden_payload_fields_present": [],
+  "metrics_changed_from_previous_run": {
+    "all_valid_metrics_changed": false,
+    "strict_metrics_changed": false
+  },
+  "output_dir": "results/final_clean_scope_20260424T085810Z/scope_defense_track3_reprocess",
+  "row_count": 1500,
+  "scope_payload_clean": true,
+  "source_artifact": "results/final_clean_scope_20260424T085810Z/final_clean_scope_run.jsonl",
+  "timestamp": "2026-04-24T17:40:49.415427+00:00"
+}

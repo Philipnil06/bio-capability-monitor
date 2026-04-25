@@ -1,0 +1,3 @@
+policy_name,same_tier_true_violations,same_tier_FN_original,same_tier_FN_augmented,same_tier_FN_recovered,excess_tier_true_violations,excess_tier_FN_original,excess_tier_FN_augmented,excess_tier_FN_recovered
+all_valid,215,176,150,26,805,35,1,34
+hard_label,65,26,0,26,655,35,1,34

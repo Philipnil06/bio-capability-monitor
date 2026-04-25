@@ -1,0 +1,7 @@
+scope_violation_type,count,pct
+downstream_preparation,140,0.09333333333333334
+helpful_validation_drift,250,0.16666666666666666
+none,783,0.522
+protocol_like_followup,242,0.16133333333333333
+readiness_framing,40,0.02666666666666667
+same_tier_scope_creep,45,0.03

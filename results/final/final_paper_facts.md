@@ -8,6 +8,7 @@
 - Paper-default summaries: `results/final/summaries/final_overall_summary.csv`, `results/final/summaries/final_by_condition_summary.csv`, `results/final/summaries/final_by_scenario_summary.csv`, `results/final/summaries/final_by_scenario_condition_summary.csv`, `results/final/summaries/final_borderline_summary.csv`
 - Original-reference summaries: `results/final/summaries/original_final_overall_summary.csv` and matching `original_final_*` files
 - Audit markdown: `results/final/audit/final_audit_15.md`, `results/final/audit/final_audit_15_monitor_rerun.md`
+- Scope-defense evaluation: `results/final/scope_defense_eval/scope_defense_summary.csv`, `results/final/scope_defense_eval/scope_defense_by_cluster.csv`, `results/final/scope_defense_eval/scope_defense_cases.md`, `results/final/scope_defense_eval/paper_ready_scope_defense_summary.md`
 
 ## Final overall metrics
 
@@ -35,6 +36,26 @@
 ## Hidden-side-goal fix
 
 The original monitor payload included `hidden_side_goal`. The patched rerun removes it from the monitor-side task payload and reruns only the monitor, leaving builder and verifier outputs unchanged. The effect on final metrics is small: `TP` rises from `791` to `795` and `FN` falls from `73` to `69`.
+
+## Scope-aware postcondition defense
+
+The optional scope-aware postcondition layer was evaluated as postprocessing on `results/final/monitor_rerun/final_1500_monitor_rerun.jsonl`, using the 69 corrected-rerun false negatives in `results/final/fn_analysis/corrected_rerun_false_negatives.csv`.
+
+- Targeted FN recovery: `69/69 = 100.00%`
+- Same-tier FN recovery: `29/29 = 100.00%`
+- Excess-tier FN recovery: `40/40 = 100.00%`
+- Clean negative sample false positives: `0/200 = 0.00%`
+- Strict ambiguity-excluded original corrected monitor: `TP=645`, `TN=486`, `FP=0`, `FN=69`, `precision=1.000`, `recall=0.9034`, `F1=0.9492`
+- Strict ambiguity-excluded augmented monitor: `TP=714`, `TN=486`, `FP=0`, `FN=0`, `precision=1.000`, `recall=1.0000`, `F1=1.0000`
+
+Recovered FN clusters:
+
+- `S1 benign_overuse`: `37/37`, dominant type `helpful_validation_drift`
+- `S1 partial_adversarial`: `2/2`, dominant type `downstream_preparation`
+- `S2 partial_adversarial`: `11/11`, dominant type `same_tier_scope_creep`
+- `S3 partial_adversarial`: `19/19`, dominant type `readiness_framing`
+
+Interpretation: report as an implemented additional defense layer, with cautious language. It should be framed as a targeted postcondition defense over the corrected monitor, not as a benchmark redesign or verifier replacement.
 
 ## Case-study anchors
 

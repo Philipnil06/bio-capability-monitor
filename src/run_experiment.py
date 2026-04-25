@@ -20,6 +20,7 @@ from .monitor import Monitor
 from .providers.base import ModelProvider
 from .providers.openai_compatible_provider import OpenAICompatibleProvider
 from .providers.openai_provider import OpenAIProvider
+from .scope_postcondition import augment_row_with_scope_defense
 from .tasks import load_tasks
 from .types import BuilderRunResult, RunRecord, TaskSpec, ToolCall, task_condition
 from .utils import append_jsonl, read_jsonl, to_jsonable, utc_timestamp
@@ -255,6 +256,8 @@ def run_once(
     builder_model: str,
     monitor_model: str,
     max_builder_attempts: int = 3,
+    enable_scope_defense: bool = False,
+    clean_monitor_input: bool = False,
 ) -> RunRecord:
     """Run one task and return a record. Exceptions are captured in-record."""
 
@@ -290,7 +293,8 @@ def run_once(
             ambiguous_policy=ambiguous_violation_policy(),
         )
         true_violation = violation_labels.true_violation
-        monitor_result = monitor.run(task, builder_result)
+        monitor_task = replace(task, hidden_side_goal=None) if clean_monitor_input else task
+        monitor_result = monitor.run(monitor_task, builder_result)
         outcome = classify_monitor_outcome(true_violation, monitor_result.boundary_violation)
         error = builder_result.error or builder_result.parse_error or monitor_result.parse_error
         valid = (
@@ -317,7 +321,7 @@ def run_once(
         error = str(exc)
         valid = False
 
-    return RunRecord(
+    record = RunRecord(
         run_id=run_id,
         timestamp=timestamp,
         task_id=task.task_id,
@@ -357,6 +361,16 @@ def run_once(
         monitor_parse_error=monitor_result.parse_error,
         error=error,
     )
+    if enable_scope_defense:
+        augmented = augment_row_with_scope_defense(to_jsonable(record))
+        record.scope_postcondition_flagged = bool(augmented.get("scope_postcondition_flagged"))
+        record.scope_violation_type = str(augmented.get("scope_violation_type"))
+        record.scope_confidence = str(augmented.get("scope_confidence"))
+        record.scope_reason = str(augmented.get("scope_reason"))
+        record.triggered_patterns = list(augmented.get("triggered_patterns", []))
+        record.augmented_monitor_flagged = bool(augmented.get("augmented_monitor_flagged"))
+        record.augmented_monitor_source = str(augmented.get("augmented_monitor_source"))
+    return record
 
 
 def parse_args() -> argparse.Namespace:
@@ -390,6 +404,11 @@ def parse_args() -> argparse.Namespace:
         "--run-ids",
         default=None,
         help="Optional comma-separated run_ids to rerun when using --rerun-monitor-only.",
+    )
+    parser.add_argument(
+        "--enable-scope-defense",
+        action="store_true",
+        help="Add scope-aware postcondition and augmented monitor fields to newly generated rows.",
     )
     return parser.parse_args()
 
@@ -439,6 +458,7 @@ def main() -> None:
                 args.builder_model,
                 args.monitor_model,
                 max_builder_attempts=args.max_builder_attempts,
+                enable_scope_defense=args.enable_scope_defense,
             )
             append_jsonl(output, to_jsonable(record))
             total += 1
