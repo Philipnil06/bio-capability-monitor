@@ -599,7 +599,7 @@ def test_monitor_only_rerun_artifact_leaves_original_file_unchanged(tmp_path: Pa
 
 def test_default_monitor_rerun_output_path_is_separate() -> None:
     path = Path("results/latest_ui.jsonl")
-    assert str(default_monitor_rerun_output_path(path)) == "results/latest_ui_monitor_rerun.jsonl"
+    assert default_monitor_rerun_output_path(path) == Path("results/latest_ui_monitor_rerun.jsonl")
 
 
 def test_analysis_can_use_rerun_monitor_fields() -> None:
